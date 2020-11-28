@@ -17,14 +17,28 @@ const blogReducer = (state, action) => {
       case 'delete_blogpost':
          return state.filter((blogPosts) => blogPosts.id !== action.payload);
       // it will save whatever is true. remove whatever is false.
+      case 'edit_blogpost':
+         return state.map((blogPosts) => {
+            return blogPosts.id === action.payload.id
+               ? action.payload
+               : blogPosts;
+            //    if (blogPost.id === action.payload.id) {
+            //       return action.payload;
+            //    } else {
+            //       return blogPost
+            //    }
+         });
       default:
          return state;
    }
 };
 
 const addBlogPost = (dispatch) => {
-   return (title, content) => {
+   return (title, content, callback) => {
       dispatch({ type: 'add_blogpost', payload: { title, content } });
+      if (callback) {
+         callback();
+      }
    };
 };
 
@@ -34,10 +48,22 @@ const deleteBlogPost = (dispatch) => {
    };
 };
 
+const editBlogPost = (dispatch) => {
+   return (id, title, content, callback) => {
+      dispatch({
+         type: 'edit_blogpost',
+         payload: { id: id, title: title, content: content },
+      });
+      if (callback) {
+         callback();
+      }
+   };
+};
+
 export const { Context, Provider } = createDataContext(
    blogReducer,
-   { addBlogPost, deleteBlogPost },
-   []
+   { addBlogPost, deleteBlogPost, editBlogPost },
+   [{ title: 'TEST POST', content: 'TEST CONTENT', id: 1 }]
 );
 
 // using useState(); create multiple const for each screen eg.
